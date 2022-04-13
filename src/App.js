@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import { Routes, Route } from 'react-router-dom';
+import { ChatDetails, ChatList, Login, Register, Users } from './pages';
+import { ProtectedRoutes, ProtectedRoutesLoggedinUsers } from './ProtectedRoutes';
+import { Navbar } from './components'
+import { UserActions } from './redux/actions';
+import axios from 'axios';
 
-function App() {
+const App = () => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(UserActions.GetUsers())
+  }, [dispatch, UserActions])
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <Navbar />
+      <Routes>
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/" element={<Users />} />
+          <Route path="/inbox" element={<ChatList />} />
+          <Route path="/inbox/:id" element={<ChatDetails />} />
+        </Route>
+        <Route element={<ProtectedRoutesLoggedinUsers />}>
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+        </Route>
+      </Routes>
+    </>
+  )
 }
 
-export default App;
+export default App
